@@ -18,7 +18,7 @@
       type="text/css"
       href="https://tikzjax-demo.glitch.me/style.css"
     />
-    <script src="https://tikzjax-demo.glitch.me/tikzjax.js"></script>
+    <script src="https://raunak1089.github.io/all_scripts/tikzjax.js"></script>
   </head>
   <style>
     @import url("https://fonts.googleapis.com/css?family=Comfortaa:400,500,600,700&display=swap");
@@ -172,24 +172,10 @@
       <span>LR : 0.001</span>
     </panel>
     <div id="tab">
-    <table>
-      <tr>
-        <th>Petal</th><th>Sepal</th><th>Flower</th>
-      </tr>
-      <tr>
-        <td>0.04</td><td>0.42</td><td>S</td>
-      </tr>
-      <tr>
-        <td>1</td><td>0.54</td><td>Vr</td>
-      </tr>
-      <tr>
-        <td>0.5</td><td>0.37</td><td>Vg</td>
-      </tr>
-    </table>
-    <button onclick="loadClipboardData();">LOAD EXCEL DATA</button>
-    <table id="test_input"></table>
-    <button onclick="getResult()">GET RESULT</button>
-    
+      <table id="showTab"></table>
+      <button onclick="loadClipboardData();">LOAD EXCEL DATA</button>
+      <table id="test_input"></table>
+      <button onclick="getResult()">GET RESULT</button>
     </div>
   </body>
   <script>
@@ -303,13 +289,15 @@
         }
         for(let o of Y) if(!Outputs.includes(o)) Outputs.push(o);
         layers = [X[0].length, 2, Outputs.length];
-        // document.querySelector('#network').innerHTML = generateTikzCode(layers);
+        document.querySelector('#network').innerHTML = generateTikzCode(layers);
+        TikzTypeset();
         createTable();
       })
     }
 
     function createTable() {
       let test = document.querySelector('#test_input');
+      test.innerHTML= '';
       let tr = document.createElement('tr');
       for (let i in X[0]) {
         let td = document.createElement('td');
@@ -320,6 +308,21 @@
       td.style.border = '2px solid red';
       tr.appendChild(td);
       test.appendChild(tr);
+
+      let showTab = document.querySelector('#showTab');
+      showTab.innerHTML = '';
+      for (let r in X) {
+        let tr = document.createElement('tr');
+        for (c of X[r]) {
+          let td = document.createElement('td');
+          td.innerHTML = c;
+          tr.appendChild(td);
+        }
+        let td = document.createElement('td');
+        td.innerHTML = Y[r];
+        tr.appendChild(td);
+        showTab.appendChild(tr);
+      }
     }
 
 
@@ -567,6 +570,8 @@
       let result = document.querySelector('#test_input td:last-child');
       result.innerHTML = Outputs[transpose(argMax(neural_network(input_arr,weights,biases)))[0].indexOf(1)];
     }
+
+
 
 
   </script>
