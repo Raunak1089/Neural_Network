@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiple Inputs</title>
+    <script src="https://raunak1089.github.io/all_scripts/disablescroll.js"></script>
+    <script src="https://raunak1089.github.io/all_scripts/touch_functions.js"></script>
+    <script src="https://raunak1089.github.io/all_scripts/stat_script.js"></script>
+    <script src="https://raunak1089.github.io/all_scripts/fontawesome.js"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://tikzjax-demo.glitch.me/style.css"
+    />
+    <script src="https://tikzjax-demo.glitch.me/tikzjax.js"></script>
+  </head>
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=Comfortaa:400,500,600,700&display=swap");
+    @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap");
+    @import url("https://fonts.googleapis.com/css?family=Lora:400,500,600,700&display=swap");
+    @import url("https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap");
+    @import url("https://fonts.googleapis.com/css?family=Outfit:400,500,600,700&display=swap");
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    buttons button {
+      margin: auto 3%;
+      font-size: 1.2em;
+      padding: 3px 7px;
+    }
+
+    svg#myCanvas {
+      position: absolute;
+      background: #eee;
+      z-index: -1;
+      top: 0;
+    }
+
+    svg svg {
+      position: absolute;
+      background: none;
+    }
+
+    text {
+      user-select: none;
+    }
+
+    #x-axis line,
+    #y-axis line {
+      stroke: black;
+      stroke-width: 1;
+    }
+
+    #x-axis text,
+    #y-axis text {
+      fill: black;
+      fill-opacity: 0.5;
+      font-family: "Arial";
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    #points text {
+      font-family: "Arial";
+      font-size: 20px;
+      fill: black;
+    }
+
+    #pp polyline {
+      fill: none;
+      stroke: red;
+      stroke-width: 1.5;
+    }
+    #pp polyline:hover {
+      stroke-width: 3;
+    }
+
+
+
+    div#tab {
+      position: absolute;
+      right: 10px;
+      top: 20%;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid black;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+    }
+
+  </style>
+  <body>
+    <span>Cross Entropy = <l_val></l_val></span>
+    <br />
+    <details>
+      <summary style="cursor: pointer">Show Network</summary>
+      <div id="network">
+        <script type="text/tikz"></script>
+      </div>
+    </details>
+
+    <details>
+      <summary
+        style="cursor: pointer"
+      >
+        Show matrix
+      </summary>
+      <div id="matrix">
+        \( \begin{align*} \begin{pmatrix} h_1 \\ h_2 \\ h_3 \end{pmatrix} &=
+        \begin{pmatrix} w_1 \\ w_2 \\ w_3 \end{pmatrix} x + \begin{pmatrix} b_1
+        \\ b_2 \\ b_3 \end{pmatrix} \\ \\ \begin{pmatrix} h_4 \\ h_5 \\ h_6
+        \end{pmatrix} &= \begin{pmatrix} w_4 & w_5 & w_6 \\ w_7 & w_8 & w_9 \\
+        w_{10} & w_{11} & w_{12} \end{pmatrix} \begin{pmatrix} \text{ReLU}(h_1)
+        \\ \text{ReLU}(h_2) \\ \text{ReLU}(h_3) \end{pmatrix} + \begin{pmatrix}
+        b_4 \\ b_5 \\ b_6 \end{pmatrix} \\ \\ \begin{pmatrix} h_7 \\ h_8 \\ h_9
+        \end{pmatrix} &= \begin{pmatrix} w_{13} & w_{14} & w_{15} \\ w_{16} &
+        w_{17} & w_{18} \\ w_{19} & w_{20} & w_{21} \end{pmatrix}
+        \begin{pmatrix} \text{ReLU}(h_4) \\ \text{ReLU}(h_5) \\ \text{ReLU}(h_6)
+        \end{pmatrix} + \begin{pmatrix} b_7 \\ b_8 \\ b_9 \end{pmatrix} \\ \\ y
+        &= \begin{pmatrix} w_{22} & w_{23} & w_{24} \end{pmatrix}
+        \begin{pmatrix} \text{ReLU}(h_7) \\ \text{ReLU}(h_8) \\ \text{ReLU}(h_9)
+        \end{pmatrix} + b_{10} \end{align*} \)
+      </div>
+    </details>
+    <panel style="position: absolute; top: 0; right: 0; width: 25%">
+      <buttons
+        style="display: flex; flex-direction: row; justify-content: flex-end"
+      >
+        <button onclick="initiate();" title="RETRAIN">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button onclick="clearInterval(iters);console.log('Done with ' + n_iters + ' iterations');" title="STOP">
+          <i class="fa-solid fa-pause"></i>
+        </button>
+        <button onclick="go()" title="GO">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        <button onclick="clear_all()" title="CLEAR">
+          <i class="fa-solid fa-stop"></i>
+        </button>
+      </buttons>
+      <input
+        style="width: 100%; height: 1px; margin-top: 10px;"
+        type="range"
+        min="0"
+        max="5"
+        step="0.0001"
+        value="0.001"
+        oninput="
+        LR = this.value;
+        document.querySelector('panel span').innerText='LR : '+LR;
+        "
+      />
+      <br />
+      <span>LR : 0.001</span>
+    </panel>
+    <div id="tab">
+    <table>
+      <tr>
+        <th>Petal</th><th>Sepal</th><th>Flower</th>
+      </tr>
+      <tr>
+        <td>0.04</td><td>0.42</td><td>S</td>
+      </tr>
+      <tr>
+        <td>1</td><td>0.54</td><td>Vr</td>
+      </tr>
+      <tr>
+        <td>0.5</td><td>0.37</td><td>Vg</td>
+      </tr>
+    </table>
+    <button id="getflower">GET FLOWER</button>
+    <button onclick="loadClipboardData();">LOAD EXCEL DATA</button>
+    <table id="test_input"></table>
+    <button onclick="getResult()">GET RESULT</button>
+    
+    </div>
+  </body>
+  <script>
+    let iters, n_iters;
+
+    function update_matrix_latex(w, b) {
+      function MatrixtoLatex(matrix) {
+        let latex = "\\begin{pmatrix} ";
+        let rows = [];
+        for (let r of matrix) {
+          r = r.map((x) => round(x, 2));
+          rows.push(r.join(" & "));
+        }
+        latex += rows.join(" \\\\ ");
+        latex += " \\end{pmatrix}";
+        return latex;
+      }
+
+      mat = document.querySelector("#matrix");
+
+      let latex = `
+      \\(
+      \\begin{align*}
+      `;
+
+      for (let m in w) {
+        latex +=
+          MatrixtoLatex(w[m]) +
+          "\\text{,}" +
+          MatrixtoLatex(b[m]) +
+          " \\\\ \\\\";
+      }
+
+      latex += `
+      \\end{align*}
+      \\)
+      `;
+
+      mat.innerHTML = latex;
+      MathJax.typeset();
+    }
+
+
+    function generateTikzCode(neuronCounts) {
+        let tikz = "\\begin{tikzpicture}[x=1.5cm, y=1.5cm, >=stealth]\n\n";
+
+        // Input layer
+        for (let i = 0; i < neuronCounts[0]; i++) {
+            tikz += `\\node[draw, circle] (input-${i + 1}) at (0,${i}) {Input};\n`;
+        }
+        tikz += "\n";
+
+        // Hidden layers
+        let prevLayer = "";
+        for (let i = 1; i < neuronCounts.length - 1; i++) {
+            for (let j = 0; j < neuronCounts[i]; j++) {
+                tikz += `\\node[draw, circle] (h${i}-${j + 1}) at (${2 * i},${j - Math.floor(neuronCounts[i] / 2)}) {AF};\n`;
+            }
+            tikz += "\n";
+            if (i === 1) {
+                for (let j = 0; j < neuronCounts[0]; j++) {
+                    for (let k = 0; k < neuronCounts[i]; k++) {
+                        tikz += `\\draw[->] (input-${j + 1}) -- (h${i}-${k + 1});\n`;
+                    }
+                }
+            } else {
+                for (let j = 0; j < neuronCounts[i - 1]; j++) {
+                    for (let k = 0; k < neuronCounts[i]; k++) {
+                        tikz += `\\draw[->] (h${i - 1}-${j + 1}) -- (h${i}-${k + 1});\n`;
+                    }
+                }
+            }
+            tikz += "\n";
+            prevLayer = `h${i}-1`;
+        }
+
+        // Output layer
+        for (let i = 0; i < neuronCounts[neuronCounts.length - 1]; i++) {
+            tikz += `\\node[draw, circle] (output-${i + 1}) at (${2 * (neuronCounts.length - 1)},${i - Math.floor(neuronCounts[neuronCounts.length - 1] / 2)}) {Output};\n`;
+        }
+        tikz += "\n";
+        for (let i = 0; i < neuronCounts[neuronCounts.length - 1]; i++) {
+            for (let j = 0; j < neuronCounts[neuronCounts.length - 2]; j++) {
+                tikz += `\\draw[->] (h${neuronCounts.length - 2}-${j + 1}) -- (output-${i + 1});\n`;
+            }
+        }
+
+        tikz += "\\end{tikzpicture}\n";
+
+        return "<script type='text/tikz'>" + tikz + "<//script>";
+      }
+
+
+    function clear_all() {
+      X = []; Y = []; Outputs = [];
+      initiate();
+    }
+
+
+    function loadClipboardData() {	
+      X = []; Y = []; Outputs = [];
+      navigator.clipboard.readText().then((str)=>{
+        let arr=[];
+        str = str.trim();
+        for(let r of str.split('\n')){
+            X.push([]);
+            for(let i=0; i < r.split('\t').length-1; i++){
+                X[X.length-1].push(Number(r.split('\t')[i]));
+            }
+            Y.push(r.split('\t')[r.split('\t').length-1].trim());
+        }
+        for(let o of Y) if(!Outputs.includes(o)) Outputs.push(o);
+        layers = [X[0].length, 2, Outputs.length];
+        // document.querySelector('#network').innerHTML = generateTikzCode(layers);
+        createTable();
+      })
+    }
+
+    function createTable() {
+      let test = document.querySelector('#test_input');
+      let tr = document.createElement('tr');
+      for (let i in X[0]) {
+        let td = document.createElement('td');
+        td.contentEditable = true;
+        tr.appendChild(td);
+      }
+      let td = document.createElement('td');
+      td.style.border = '2px solid red';
+      tr.appendChild(td);
+      test.appendChild(tr);
+    }
+
+
+  </script>
+  <script>
+
+    //  BASIC NEEDS   ___________________________________________________________________________
+
+    function getStdNormalRandNo() {
+      return (
+        Math.sin(2 * Math.PI * Math.random()) *
+        Math.sqrt(-2 * Math.log(Math.random()))
+      );
+    }
+
+    function f(x) {
+      return neural_network(x, weights, biases);
+    }
+
+    function Derivative(func, values, argIndex) {
+      const h = 10 ** -6;
+      const argsPlusH = [...values];
+      const argsMinusH = [...values];
+      argsPlusH[argIndex] += h;
+      // argsMinusH[argIndex] -= h;
+
+      const funcPlusH = func(...argsPlusH);
+      const funcMinusH = func(...argsMinusH);
+
+      let deriv = (funcPlusH - funcMinusH) * 10 ** 6;
+      let rounded = round(deriv, 4);
+      return rounded;
+    }
+
+
+    // ACTIVATION FUNCTIONS ________________________________________________________________________
+
+    function softPlus(x) {
+      return Math.log(1 + Math.exp(x));
+    }
+    function vectorSoftPlus(vect) {
+      let row_arr = transpose(vect);
+      row_arr[0] = row_arr[0].map((x) => Math.log(1 + Math.exp(x)));
+      return transpose(row_arr);
+    }
+    function ReLU(x) {
+      return Math.max(0, x);
+    }
+    function vectorReLU(vect) {
+      let row_arr = transpose(vect);
+      row_arr[0] = row_arr[0].map((x) => Math.max(0, x));
+      return transpose(row_arr);
+    }
+    function softMax(vect) {
+      let row_arr = transpose(vect);
+      let expsum = 0;
+      for(e of row_arr[0]) expsum += Math.exp(e);
+      row_arr[0] = row_arr[0].map((x) => Math.exp(x)/expsum);
+      return transpose(row_arr);
+    }
+    function argMax(vect) {
+      let row_arr = transpose(vect);
+      let maxIndex = row_arr[0].indexOf(Math.max(...row_arr[0]));
+      let new_vect = Array(row_arr[0].length).fill(0);
+      new_vect[maxIndex] = 1;
+      return transpose([new_vect]);
+    }
+
+
+    // MATRIX OPERATIONS _____________________________________________________________________
+
+    function multiply_matrices(matrix_1, matrix_2) {
+      if (matrix_1[0].length !== matrix_2.length) {
+        throw new Error("Invalid dimensions for matrix multiplication.");
+      }
+      const product_matrix = [];
+      for (let i = 0; i < matrix_1.length; i++) {
+        product_matrix.push(new Array(matrix_2[0].length).fill(0));
+      }
+      for (let i = 0; i < matrix_1.length; i++) {
+        for (let j = 0; j < matrix_2[0].length; j++) {
+          for (let k = 0; k < matrix_1[0].length; k++) {
+            product_matrix[i][j] += matrix_1[i][k] * matrix_2[k][j];
+          }
+        }
+      }
+      return product_matrix;
+    }
+
+    function add_matrices(matrix_1, matrix_2) {
+      if (
+        matrix_1[0].length !== matrix_2[0].length ||
+        matrix_1.length !== matrix_2.length
+      ) {
+        throw new Error("Invalid dimensions for matrix addition.");
+      }
+      const add_matrix = [];
+      for (let i in matrix_1) {
+        add_matrix.push([]);
+        for (let j in matrix_1[i]) {
+          add_matrix[i][j] = matrix_1[i][j] + matrix_2[i][j];
+        }
+      }
+      return add_matrix;
+    }
+
+    function transpose(matrix) {
+      const transpose = [];
+      for (let i = 0; i < matrix[0].length; i++) {
+        transpose.push(new Array(matrix.length).fill(0));
+      }
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
+          transpose[j][i] = matrix[i][j];
+        }
+      }
+      return transpose;
+    }
+
+    //  NETWROK OPERATIONS _____________________________________________________________________
+
+    let X = [
+      [0.04, 0.42],
+      [1, 0.54],
+      [0.5, 0.37],
+    ];
+    let Y = ["S", "Vr", "Vg"];
+    let Outputs = ["S", "Vr", "Vg"];
+
+    let layers = [X[0].length, 2, Outputs.length];
+
+    let weights, biases;
+
+    function neural_network(input, w, b) {
+      let input_vector = transpose([input]);
+      for (i = 0; i < layers.length - 2; i++) {
+        input_vector = vectorReLU(
+          add_matrices(multiply_matrices(w[i], input_vector), b[i])
+        );
+      }
+      let output = add_matrices(multiply_matrices(w[1], input_vector), b[1]);
+      return softMax(output);
+    }
+
+
+    document.querySelector('#network').innerHTML = generateTikzCode(layers);
+
+
+
+    // function Loss(...args) {
+    //   let params = LineartoMatrix(args);
+    //   let SSR = 0;
+    //   for (let i in X) {
+    //     SSR += Math.pow(Y[i] - neural_network(X[i], params.w, params.b), 2);
+    //   }
+    //   return SSR;
+    // }
+
+    function CrossEntropy(...args) {
+      let params = LineartoMatrix(args);
+      let CE = 0;
+      for (let i in X) {
+        let j = Outputs.indexOf(Y[i]);
+        CE += -1 * Math.log(Number(softMax(neural_network(X[i], params.w, params.b))[j]));
+      }
+      return CE;
+    }
+
+    let LR;
+
+    function initiate() {
+      LR = 0.001;
+      document.querySelector('panel input[type="range"]').value = 0.001;
+      document.querySelector("panel span").innerText = "LR : " + LR;
+
+      n_iters = 0;
+
+      weights = [];
+      biases = [];
+      for (let i = 1; i < layers.length; i++) {
+        weights.push([]);
+        biases.push([]);
+        for (let j = 0; j < layers[i]; j++) {
+          weights[i - 1].push([]);
+          for (let k = 0; k < layers[i - 1]; k++) {
+            weights[i - 1][j].push(getStdNormalRandNo());
+          }
+          biases[i - 1].push([0]);
+        }
+      }
+    }
+
+    initiate();
+
+    function MatrixtoLinear(wb_Matrix) {
+      return eval(`[${wb_Matrix.toString()}]`);
+    }
+
+    function LineartoMatrix(array) {
+      w1 = [];
+      b1 = [];
+      serial = 0;
+      bs = array.length - (sum(layers) - layers[0]);
+      for (let i = 1; i < layers.length; i++) {
+        w1.push([]);
+        b1.push([]);
+        for (let j = 0; j < layers[i]; j++) {
+          w1[i - 1].push([]);
+          for (let k = 0; k < layers[i - 1]; k++) {
+            w1[i - 1][j].push(array[serial]);
+            serial++;
+          }
+          b1[i - 1].push([array[bs]]);
+          bs++;
+        }
+      }
+      this.w = w1;
+      this.b = b1;
+      return this;
+    }
+
+    function update_parameters() {
+      let parameters = MatrixtoLinear([weights, biases]);
+      for (let i in parameters) {
+        parameters[i] -= Derivative(CrossEntropy, parameters, i) * LR;
+      }
+      weights = LineartoMatrix(parameters).w;
+      biases = LineartoMatrix(parameters).b;
+      return [...parameters, CrossEntropy(...parameters)];
+    }
+
+    function go() {
+      iters = setInterval(() => {
+        let result = update_parameters();
+        document.querySelector("l_val").innerText = result[result.length - 1];
+        update_matrix_latex(weights, biases);
+        // draw();
+        n_iters++;
+      }, 200);
+    }
+
+
+    function getResult() {
+      let input_arr = document.querySelector('#test_input').innerText.trim().split('\t').slice(0,X[0].length).map(x=>Number(x));
+      let result = document.querySelector('#test_input td:last-child');
+      result.innerHTML = Outputs[transpose(argMax(neural_network(input_arr,weights,biases)))[0].indexOf(1)];
+    }
+
+
+  </script>
+</html>
