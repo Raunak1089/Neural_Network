@@ -288,7 +288,7 @@
             Y.push(r.split('\t')[r.split('\t').length-1].trim());
         }
         for(let o of Y) if(!Outputs.includes(o)) Outputs.push(o);
-        layers = [X[0].length, 2, Outputs.length];
+        layers = [X[0].length, 3, 3, Outputs.length];
         document.querySelector('#network').innerHTML = generateTikzCode(layers);
         TikzTypeset();
         createTable();
