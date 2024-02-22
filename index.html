@@ -39,53 +39,6 @@
       padding: 3px 7px;
     }
 
-    svg#myCanvas {
-      position: absolute;
-      background: #eee;
-      z-index: -1;
-      top: 0;
-    }
-
-    svg svg {
-      position: absolute;
-      background: none;
-    }
-
-    text {
-      user-select: none;
-    }
-
-    #x-axis line,
-    #y-axis line {
-      stroke: black;
-      stroke-width: 1;
-    }
-
-    #x-axis text,
-    #y-axis text {
-      fill: black;
-      fill-opacity: 0.5;
-      font-family: "Arial";
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    #points text {
-      font-family: "Arial";
-      font-size: 20px;
-      fill: black;
-    }
-
-    #pp polyline {
-      fill: none;
-      stroke: red;
-      stroke-width: 1.5;
-    }
-    #pp polyline:hover {
-      stroke-width: 3;
-    }
-
-
 
     div#tab {
       position: absolute;
@@ -108,6 +61,7 @@
   <body>
     <span>Cross Entropy = <l_val></l_val></span>
     <br />
+    <span><n_iters></n_iters> iterations</span>
     <details>
       <summary style="cursor: pointer">Show Network</summary>
       <div id="network">
@@ -159,7 +113,7 @@
         style="width: 100%; height: 1px; margin-top: 10px;"
         type="range"
         min="0"
-        max="0.2"
+        max="0.1"
         step="0.0001"
         value="0.001"
         oninput="
@@ -499,6 +453,7 @@
       document.querySelector("panel span").innerText = "LR : " + LR;
 
       n_iters = 0;
+      document.querySelector('n_iters').innerText = n_iters;
 
       weights = [];
       biases = [];
@@ -560,7 +515,15 @@
         document.querySelector("l_val").innerText = result[result.length - 1];
         update_matrix_latex(weights, biases);
         // draw();
+        var weightsLinear = MatrixtoLinear(weights);
+        var biasesLinear = MatrixtoLinear(biases);
+
+        localStorage.setItem('weightMatrix', JSON.stringify(weightsLinear));
+        localStorage.setItem('biasVector', JSON.stringify(biasesLinear));
+        
         n_iters++;
+        document.querySelector('n_iters').innerText = n_iters;
+        
       }, 200);
     }
 
