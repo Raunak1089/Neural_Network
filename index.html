@@ -417,7 +417,7 @@
           add_matrices(multiply_matrices(w[i], input_vector), b[i])
         );
       }
-      let output = add_matrices(multiply_matrices(w[1], input_vector), b[1]);
+      let output = add_matrices(multiply_matrices(w[layers.length - 2], input_vector), b[layers.length - 2]);
       return softMax(output);
     }
 
